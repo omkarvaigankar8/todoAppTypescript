@@ -1,0 +1,9 @@
+.form{
+display: flex;
+flex-direction: column;
+    input[type="submit"]{
+    background: inherit;
+    border: none;
+    color: inherit;
+}
+}

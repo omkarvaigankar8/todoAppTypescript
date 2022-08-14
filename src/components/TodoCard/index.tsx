@@ -1,64 +1,160 @@
 import React from 'react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Todo } from '../Modals';
+import { Post } from '../Modals';
+import './card.scss';
+import {
+	Button,
+	ButtonGroup,
+	Card,
+	CardContent,
+	TextField,
+	Typography,
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import { FormProvider, useForm } from 'react-hook-form';
+import Form from '../Form/index';
+import { SaveAltRounded } from '@mui/icons-material';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { useAppDispatch } from '../../store/app/hooks';
+import { deletePost } from '../../store/features/user/userSlice';
 
 interface Props {
 	// todo: Todo;
-	id:number;
-	title:string;
-	index:number;
-	removeTodoHandler: (id: number) => void;
-    submitEditHandler:(data:object)=>void;
-    edit:Boolean,
-    setEdit: React.Dispatch<React.SetStateAction<Boolean>>
+	body: string;
+	id: number;
+	title: string;
+	index: number;
+	// removeTodoHandler: (id: number) => void;
+	submitEditHandler: (data: object) => void;
+	edit: Boolean;
+	setEdit: React.Dispatch<React.SetStateAction<Boolean>>;
 }
-const TodoCard: React.FC<Props> = ({ title,id, removeTodoHandler,submitEditHandler,edit,setEdit,index }) => {
+const TodoCard: React.FC<Props> = ({
+	title,
+	id,
+	// removeTodoHandler,
+	submitEditHandler,
+	edit,
+	setEdit,
+	index,
+	body,
+}) => {
+	const dispatch = useAppDispatch();
+	const [editIndex, setEditIndex] = useState<number>(-1);
 	const methods = useForm();
-	const [editIndex,setEditIndex]=useState<number>(-1)
 	const {
 		handleSubmit,
 		register,
+		setValue,
 		formState: { errors },
 	} = methods;
-	const error = errors['todo'];
-	// const [editTodoText, setEditTodoText] = useState<string>(todo.todo);
+	const error = errors['title'];
+	const errorBody = errors['body'];
 	const editTodoHandler = (id: number) => {
-		alert("ji")
 		setEdit(!edit);
-		setEditIndex(id)
+		if (edit === true) {
+			setEditIndex(-1);
+		} else {
+			setEditIndex(id);
+		}
 	};
-	console.log('index:',editIndex,index)
+	const deletePostHandler=(id:number) =>{
+		setEdit(!edit);
+		dispatch(deletePost(id))
+		// if (edit === true) {
+		// 	setEditIndex(-1);
+		// } else {
+		// 	setEditIndex(id);
+		// }
+	}
 	return (
-		<div
-		>
-			{(edit && (editIndex === id)) ? (
-				<form onSubmit={(e)=>{e.preventDefault()
-                 handleSubmit(submitEditHandler)(e)
-				 setEditIndex(-1)
-				 }}>
-                    <h1>F</h1>
-					<input
-						type='text'
-						// onChange={(e) => {
-						// 	setEditTodoText(e.target.value);
-						// }}
-						{...register(`${id}`, { required: true })}
-					/>
-					<input type='submit' />
-				</form>
-			) : (
-				<h2>{title}</h2>
-			)}
-			<span
-				onClick={() => {
-					editTodoHandler(id);
-				}}
-			>
-				Edit
-			</span>
-			{/* <p>{todo.isCompleted}</p> */}
-		</div>
+		<Card sx={{ width: 320, height: 320 }}>
+			<CardContent className='card_content'>
+				{edit && editIndex === id ? (
+					<>
+						<FormProvider {...methods}>
+							<Form
+								onSubmit={(data) => {
+									setValue('id', id);
+									handleSubmit(submitEditHandler)(data);
+									setEditIndex(-1);
+								}}
+							>
+								<TextField
+									error={error ? true : false}
+									id='title'
+									placeholder='Title'
+									defaultValue={title}
+									helperText={error ? 'Title cannot be Empty' : null}
+									variant='standard'
+									{...register('title', { required: true })}
+								/>
+								<TextField
+									placeholder='Body'
+									multiline
+									rows={4}
+									error={errorBody ? true : false}
+									defaultValue={body}
+									helperText={errorBody ? 'Body cannot be Empty' : null}
+									variant='standard'
+									{...register('body', { required: true })}
+								/>
+								<ButtonGroup className='buttonGroup' variant='contained'>
+									<Button
+										startIcon={<SaveAltRounded />}
+										type='submit'
+										color='primary'
+									>
+										Save
+									</Button>
+									<Button
+										startIcon={<CancelOutlinedIcon />}
+										color='error'
+										onClick={() => {
+											editTodoHandler(id);
+										}}
+									>
+										Cancel
+									</Button>
+								</ButtonGroup>
+							</Form>
+						</FormProvider>
+					</>
+				) : (
+					<>
+						<Typography variant='h3' fontSize={24} fontWeight={700}>
+							{title}
+						</Typography>
+						<Typography>{body}</Typography>
+					</>
+				)}
+				<ButtonGroup
+					className='buttonGroup'
+					variant='contained'
+					disabled={!edit && editIndex !== id ? false : true}
+				>
+					<Button
+						startIcon={<EditIcon />}
+						color='primary'
+						onClick={() => {
+							editTodoHandler(id);
+						}}
+					>
+						Edit
+					</Button>
+					<Button
+						startIcon={<DeleteOutlineOutlinedIcon />}
+						color='error'
+						onClick={() => {
+							deletePostHandler(id);
+						}}
+					>
+						Delete
+					</Button>
+				</ButtonGroup>
+			</CardContent>
+		</Card>
 	);
 };
 

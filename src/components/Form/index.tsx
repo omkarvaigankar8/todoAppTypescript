@@ -1,12 +1,21 @@
-import React from 'react'
-
-const index = () => {
-  return (
-    <div>index</div>
-  )
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
+import './form.scss';
+interface FormProps {
+	children?: React.ReactNode;
+	onSubmit: (e:any) => void;
 }
+const Form: React.FC<FormProps> = ({ children, onSubmit }: FormProps) => {
+	const methods = useFormContext();
+	const { handleSubmit } = methods;
+	return (
+		<form onSubmit={handleSubmit(onSubmit)} className='form'>
+			{children}
+		</form>
+	);
+};
 
-export default index
+export default Form;
 // import { useFormContext } from "react-hook-form";
 // interface FormProps{
 //     children:Element,

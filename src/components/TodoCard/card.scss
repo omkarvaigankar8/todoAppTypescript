@@ -1,0 +1,21 @@
+.card_content {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+    width: 320px;
+	height: 100%;
+	p {
+		height: 120px;
+		overflow-x: auto;
+		
+	}
+	h3,p{
+		word-break: break-all;
+	}
+	.buttonGroup{
+		display: flex;
+		justify-content: space-around;
+		background: transparent;
+		box-shadow: none;
+	}
+}

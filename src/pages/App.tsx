@@ -1,101 +1,93 @@
-import React, { useState,useEffect } from 'react';
-import InputField from '../components/Form/InputField';
-import { Todo } from '../components/Modals';
+import React, { useState, useEffect } from 'react';
 import TodoCard from '../components/TodoCard';
-import { fetchUsers } from '../store/features/user/userSlice';
 import { useAppDispatch, useAppSelector } from '../store/app/hooks';
-import './App.css';
-
+import { useNavigate } from 'react-router-dom';
+import './App.scss';
+import { editTodo,fetchPost } from '../store/features/user/userSlice';
+import { Button, Grid, Typography } from '@mui/material';
+import { Container } from '@mui/system';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import { fetchPosts } from '../store/features/user/userApi';
+import Header from '../components/Header';
 const App: React.FC = () => {
 	const dispatch = useAppDispatch();
 	const user = useAppSelector((state) => state.user);
-
+	let navigate = useNavigate();
+	// console.log('POSTS', user);
 	useEffect(() => {
-		dispatch(fetchUsers());
+		console.log('USEEE',user)
+			  fetchPosts((res:any)=>{
+				console.log("initData",res)
+				dispatch(fetchPost(res));
+			 });
+		
 	}, []);
 
-
-	const [todos, setTodos] = useState<Todo[]>([]);
 	const [edit, setEdit] = useState<Boolean>(false);
-	//  useEffect(()=>{
-	//  },[todos])
-	const addTodoHandler = (data: object) => {
-		let pushObj: Todo = {
-			id: Date.now(),
-			title: Object.values(data).toString(),
-			isCompleted: false,
-		};
-		if (todos) {
-			setTodos([...todos, pushObj]);
-		}
-	};
+	// const addTodoHandler = (data: object) => {
+		
+	// 	dispatch(addPost(data));
+	// };
 
-	const removeTodoHandler = (id: number) => {
-		setTodos(todos.filter((event) => id && event.id !== id));
-	};
 	const submitEditHandler = (data: object) => {
-		let arrTodo = Object.entries(data);
-		let id = arrTodo[0][0];
-		let value = arrTodo[0][1];
-		console.log('todo:', todos);
-		const newTodos = todos.map((todo) =>
-			todo.id === Number(id) ? { ...todo, todo: value } : todo
-		);
-		console.log("newTodos",newTodos);
-		setTodos(newTodos);
+		dispatch(editTodo(data));
 		setEdit(false);
 	};
 	return (
 		<div className='App'>
-			<h1>App</h1>
-			<InputField addTodoHandler={addTodoHandler} />
+			{/* <header>
+			<Grid container alignContent={'center'} justifyContent={'space-between'} margin={'0 auto'} maxWidth={'98%'} padding={'20px 0px'}>
+				<Grid item>
+					<Typography variant='h1' fontSize={40} fontWeight={700}>
+						Post Feed
+					</Typography>
+				</Grid>
+				<Grid item>
+					<Button
+					startIcon={<HistoryEduIcon />}
+					variant='contained'
+					size='large'
+					color='primary'
+					onClick={()=>{
+						navigate('./new-post')
+					}}
+					>Create a New Post</Button>
+					
+				</Grid>
+			</Grid>
+			</header> */}
+			<Header />
+			<Container>
+					{/* <NewPost addTodoHandler={addTodoHandler} /> */}
 
-			{user.users &&
-						user.users.map((user,index) => {
-							return (<TodoCard
-								key={user.id}
-								id={user.id}
-								title={user.title}
-								index={index}
-								removeTodoHandler={removeTodoHandler}
-								submitEditHandler={submitEditHandler}
-								edit={edit}
-								setEdit={setEdit}
-								
-								/>)
-			})}
-
-
-
-			{/* { todos.map((todo, index) => {
-				return (
-					<TodoCard
-						key={todo.id}
-						todo={todo}
-						index={index}
-						removeTodoHandler={removeTodoHandler}
-						submitEditHandler={submitEditHandler}
-						edit={edit}
-						setEdit={setEdit}
-					/>
-				);
-			})} */}
-			
-
-
-			<div>
-			<h2>List of users</h2>
-			{user.loading && <div>Loading!!!!!!</div>}
-			{!user.loading && user.error && <div>{user.error}</div>}
-			{!user.loading && user.users.length > 0 && (
-				<div>
-					{user.users &&
-						user.users.map((user) => {
-							return <p key={user.id}>{user.title}</p>;
+			<Grid
+				container
+				alignContent={'center'}
+				justifyContent={'center'}
+				gap={'30px'}
+			>
+				{user.posts &&
+					user.posts
+						.slice(0)
+						.reverse()
+						.map((post, index) => {
+							return (
+								<Grid item key={index}>
+									<TodoCard
+										key={post.id}
+										id={post.id}
+										title={post.title}
+										body={post.body}
+										index={index}
+										submitEditHandler={submitEditHandler}
+										edit={edit}
+										setEdit={setEdit}
+									/>
+								</Grid>
+							);
 						})}
-				</div>
-			)}
-		</div>
+			</Grid>
+			</Container>
 		</div>
 	);
 };
