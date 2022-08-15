@@ -2,7 +2,7 @@ import React from 'react'
 import { Button, Grid, Typography } from '@mui/material';
 import { useNavigate,useLocation } from 'react-router-dom';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
-
+import './header.scss'
 const Header = () => {
 	let navigate = useNavigate();
 	let location=useLocation();

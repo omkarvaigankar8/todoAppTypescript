@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import Form from '../index';
 
@@ -21,7 +20,6 @@ const InputField = ({ addTodoHandler }: Props) => {
 	const error = errors['title'];
 	const errorBody = errors['body'];
 	const onSubmit = (data: object) => {
-		console.log('data', data);
 		addTodoHandler(data);
 	};
 	return (
@@ -41,7 +39,6 @@ const InputField = ({ addTodoHandler }: Props) => {
 						multiline
 						rows={4}
 						error={errorBody ? true : false}
-						// defaultValue=""
             helperText={errorBody?"Body cannot be Empty":null}
 						variant="standard"
 						{...register('body', { required: true })}

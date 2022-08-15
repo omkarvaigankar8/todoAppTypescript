@@ -1,23 +1,22 @@
-import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect,useState} from 'react';
+import { useNavigate} from 'react-router-dom';
 import { FormProvider, useForm } from 'react-hook-form';
-import Form from '../components/Form/index';
-import { useAppDispatch, useAppSelector } from '../store/app/hooks';
-import { addPost, fetchPost } from '../store/features/user/userSlice';
+import { Container } from '@mui/system';
 import { Button, TextField } from '@mui/material';
 import { SaveAsSharp } from '@mui/icons-material';
 
-import { fetchPosts } from '../store/features/user/userApi';
+import Form from '../components/Form/index';
+import { useAppDispatch, useAppSelector } from '../store/app/hooks';
+import { addPost, fetchPost } from '../store/features/user/userSlice';
+import { Post } from '../components/Modals/index';
+import { addPosts, fetchPosts } from '../store/features/user/userApi';
 import Header from '../components/Header';
-import { Container } from '@mui/system';
-import './App.scss'
-// interface Props {
-// 	addTodoHandler: (e: object) => void;
-// }
+import './App.scss';
+import Loader from '../components/Loader';
 
 const NewPost = () => {
 	let navigate = useNavigate();
-
+	const [loading,setLoading]= useState<Boolean>(false)
 	const user = useAppSelector((state) => state.user);
 
 	const dispatch = useAppDispatch();
@@ -31,35 +30,46 @@ const NewPost = () => {
 	const errorBody = errors['body'];
 
 	useEffect(() => {
+		setLoading(true)
 		fetchPosts((res: any) => {
-			console.log('initData', res);
 			dispatch(fetchPost(res));
+		setLoading(false)
+
 		});
 	}, []);
-	// const addTodoHandler = (data: object) => {
-
-	// };
-
 	const onSubmit = (data: object) => {
-		console.log('data', data);
-		dispatch(addPost(data));
-		navigate('../');
-		console.log('updated ', user);
+		setLoading(true)
+		let title = Object.values(data)[0];
+		let body = Object.values(data)[1];
+		let pushObj: Post = {
+			userId: 1,
+			id: user.posts.length + 1,
+			title: title,
+			body: body,
+		};
+		addPosts((res: any) => {
+			if (res) {
+				dispatch(addPost(res));
+				navigate('../');
+			}
+		}, pushObj);
 	};
 	return (
 		<>
 			<Header />
-			<Container maxWidth="sm">
+			<Container maxWidth='sm'>
+			{loading ?(
+				<Loader />
+			):(
 				<FormProvider {...methods}>
 					<Form onSubmit={handleSubmit(onSubmit)}>
 						<TextField
 							error={error ? true : false}
 							id='title'
-							
 							placeholder='Title'
 							helperText={error ? 'Title cannot be Empty' : null}
 							variant='standard'
-							className="inputs"
+							className='inputs'
 							{...register('title', { required: true })}
 						/>
 						<TextField
@@ -67,9 +77,8 @@ const NewPost = () => {
 							multiline
 							rows={4}
 							error={errorBody ? true : false}
-							// defaultValue=""
 							helperText={errorBody ? 'Body cannot be Empty' : null}
-							className="inputs"
+							className='inputs'
 							variant='standard'
 							{...register('body', { required: true })}
 						/>
@@ -83,6 +92,7 @@ const NewPost = () => {
 						</Button>
 					</Form>
 				</FormProvider>
+			)}
 			</Container>
 		</>
 	);

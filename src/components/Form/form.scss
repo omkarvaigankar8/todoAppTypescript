@@ -1,9 +1,6 @@
-.form{
-display: flex;
-flex-direction: column;
-    input[type="submit"]{
-    background: inherit;
-    border: none;
-    color: inherit;
-}
+.form {
+	display: flex;
+	flex-direction: column;
+	flex-direction: column;
+	justify-content: space-between;
 }
