@@ -81,7 +81,7 @@ const TodoCard: React.FC<Props> = ({
 	return (
 		<Card sx={{ width: 320, height: 320 }} className='post_card'>
 			{loading ? (
-				<Loader />
+				<Loader height={'100%'} />
 			) : (
 				<CardContent className='card_content'>
 					{edit && editIndex === id ? (

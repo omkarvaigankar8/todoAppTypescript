@@ -1,12 +1,13 @@
+const baseURL=process.env.REACT_APP_BASE_URL
 export const fetchPosts = async (callback: any) => {
-	await fetch(`https://jsonplaceholder.typicode.com/posts`).then((res) => {
+	await fetch(`${baseURL}`).then((res) => {
 		res.json().then((response) => {
 			callback(response);
 		});
 	});
 };
 export const addPosts = async (callback: any, data: object) => {
-	await fetch(`https://jsonplaceholder.typicode.com/posts`, {
+	await fetch(`${baseURL}`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(data),
@@ -18,7 +19,7 @@ export const addPosts = async (callback: any, data: object) => {
 };
 
 export const editPost = async (callback: any, data:any) => {
-	await fetch(`https://jsonplaceholder.typicode.com/posts/${data.id}`, {
+	await fetch(`${baseURL}${data.id}`, {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(data),
@@ -30,7 +31,7 @@ export const editPost = async (callback: any, data:any) => {
 };
 
 export const deletePosts = async (callback: any, data: number) => {
-	await fetch(`https://jsonplaceholder.typicode.com/posts/${data}`, {
+	await fetch(`${baseURL}${data}`, {
 		method: 'DELETE',
 		headers: { 'Content-Type': 'application/json' },
 	}).then((res) => {

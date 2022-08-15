@@ -59,7 +59,7 @@ const NewPost = () => {
 			<Header />
 			<Container maxWidth='sm'>
 			{loading ?(
-				<Loader />
+				<Loader  height={'90vh'}/>
 			):(
 				<FormProvider {...methods}>
 					<Form onSubmit={handleSubmit(onSubmit)}>

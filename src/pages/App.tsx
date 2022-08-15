@@ -36,7 +36,7 @@ const App: React.FC = () => {
 			<Header />
 			<Container>
 				{loading?(
-					<Loader />
+					<Loader  height={'90vh'}/>
 				):(
 				<Grid
 					container
